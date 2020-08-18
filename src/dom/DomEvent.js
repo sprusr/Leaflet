@@ -80,7 +80,7 @@ function browserFiresNativeDblClick() {
 var mouseSubst = {
 	mouseenter: 'mouseover',
 	mouseleave: 'mouseout',
-	wheel: !('onwheel' in window) && 'mousewheel'
+	wheel: !(Browser.browser && 'onwheel' in window) && 'mousewheel'
 };
 
 function addOne(obj, type, fn, context) {
@@ -232,8 +232,8 @@ export function getMousePosition(e, container) {
 // Chrome on Win scrolls double the pixels as in other platforms (see #4538),
 // and Firefox scrolls device pixels, not CSS pixels
 var wheelPxFactor =
-	(Browser.win && Browser.chrome) ? 2 * window.devicePixelRatio :
-	Browser.gecko ? window.devicePixelRatio : 1;
+	(Browser.browser && Browser.win && Browser.chrome) ? 2 * window.devicePixelRatio :
+	(Browser.browser && Browser.gecko) ? window.devicePixelRatio : 1;
 
 // @function getWheelDelta(ev: DOMEvent): Number
 // Gets normalized wheel delta from a wheel DOM event, in vertical

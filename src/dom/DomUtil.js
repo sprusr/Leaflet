@@ -196,7 +196,7 @@ function _setOpacityIE(el, value) {
 // that is a valid style name for an element. If no such name is found,
 // it returns false. Useful for vendor-prefixed styles like `transform`.
 export function testProp(props) {
-	var style = document.documentElement.style;
+	var style = Browser.browser ? document.documentElement.style : {};
 
 	for (var i = 0; i < props.length; i++) {
 		if (props[i] in style) {
@@ -258,7 +258,7 @@ export function getPosition(el) {
 export var disableTextSelection;
 export var enableTextSelection;
 var _userSelect;
-if ('onselectstart' in document) {
+if (Browser.browser && 'onselectstart' in document) {
 	disableTextSelection = function () {
 		DomEvent.on(window, 'selectstart', DomEvent.preventDefault);
 	};

@@ -16,16 +16,19 @@ import {svgCreate} from '../layer/vector/SVG.Util';
  * ```
  */
 
-var style = document.documentElement.style;
+// @property browser: Boolean; `true` if `window`, `document` and `navigator` are available.
+export var browser = typeof window !== 'undefined' && typeof document !== 'undefined' && typeof navigator !== 'undefined';
+
+var style = browser ? document.documentElement.style : {};
 
 // @property ie: Boolean; `true` for all Internet Explorer versions (not Edge).
-export var ie = 'ActiveXObject' in window;
+export var ie = browser && 'ActiveXObject' in window;
 
 // @property ielt9: Boolean; `true` for Internet Explorer versions less than 9.
 export var ielt9 = ie && !document.addEventListener;
 
 // @property edge: Boolean; `true` for the Edge web browser.
-export var edge = 'msLaunchUri' in navigator && !('documentMode' in document);
+export var edge = browser && 'msLaunchUri' in navigator && !('documentMode' in document);
 
 // @property webkit: Boolean;
 // `true` for webkit-based browsers like Chrome and Safari (including mobile versions).
@@ -39,12 +42,12 @@ export var android = userAgentContains('android');
 export var android23 = userAgentContains('android 2') || userAgentContains('android 3');
 
 /* See https://stackoverflow.com/a/17961266 for details on detecting stock Android */
-var webkitVer = parseInt(/WebKit\/([0-9]+)|$/.exec(navigator.userAgent)[1], 10); // also matches AppleWebKit
+var webkitVer = browser && parseInt(/WebKit\/([0-9]+)|$/.exec(navigator.userAgent)[1], 10); // also matches AppleWebKit
 // @property androidStock: Boolean; `true` for the Android stock browser (i.e. not Chrome)
-export var androidStock = android && userAgentContains('Google') && webkitVer < 537 && !('AudioNode' in window);
+export var androidStock = android && userAgentContains('Google') && webkitVer < 537 && !(browser && 'AudioNode' in window);
 
 // @property opera: Boolean; `true` for the Opera browser
-export var opera = !!window.opera;
+export var opera = browser && !!window.opera;
 
 // @property chrome: Boolean; `true` for the Chrome browser.
 export var chrome = !edge && userAgentContains('chrome');
@@ -62,20 +65,20 @@ export var phantom = userAgentContains('phantom');
 export var opera12 = 'OTransition' in style;
 
 // @property win: Boolean; `true` when the browser is running in a Windows platform
-export var win = navigator.platform.indexOf('Win') === 0;
+export var win = browser && navigator.platform.indexOf('Win') === 0;
 
 // @property ie3d: Boolean; `true` for all Internet Explorer versions supporting CSS transforms.
 export var ie3d = ie && ('transition' in style);
 
 // @property webkit3d: Boolean; `true` for webkit-based browsers supporting CSS transforms.
-export var webkit3d = ('WebKitCSSMatrix' in window) && ('m11' in new window.WebKitCSSMatrix()) && !android23;
+export var webkit3d = browser && ('WebKitCSSMatrix' in window) && ('m11' in new window.WebKitCSSMatrix()) && !android23;
 
 // @property gecko3d: Boolean; `true` for gecko-based browsers supporting CSS transforms.
 export var gecko3d = 'MozPerspective' in style;
 
 // @property any3d: Boolean
 // `true` for all browsers supporting CSS transforms.
-export var any3d = !window.L_DISABLE_3D && (ie3d || webkit3d || gecko3d) && !opera12 && !phantom;
+export var any3d = browser && !window.L_DISABLE_3D && (ie3d || webkit3d || gecko3d) && !opera12 && !phantom;
 
 // @property mobile: Boolean; `true` for all browsers running in a mobile device.
 export var mobile = typeof orientation !== 'undefined' || userAgentContains('mobile');
@@ -89,18 +92,18 @@ export var mobileWebkit3d = mobile && webkit3d;
 
 // @property msPointer: Boolean
 // `true` for browsers implementing the Microsoft touch events model (notably IE10).
-export var msPointer = !window.PointerEvent && window.MSPointerEvent;
+export var msPointer = browser && !window.PointerEvent && window.MSPointerEvent;
 
 // @property pointer: Boolean
 // `true` for all browsers supporting [pointer events](https://msdn.microsoft.com/en-us/library/dn433244%28v=vs.85%29.aspx).
-export var pointer = !!(window.PointerEvent || msPointer);
+export var pointer = browser && !!(window.PointerEvent || msPointer);
 
 // @property touch: Boolean
 // `true` for all browsers supporting [touch events](https://developer.mozilla.org/docs/Web/API/Touch_events).
 // This does not necessarily mean that the browser is running in a computer with
 // a touchscreen, it only means that the browser is capable of understanding
 // touch events.
-export var touch = !window.L_NO_TOUCH && (pointer || 'ontouchstart' in window ||
+export var touch = browser && !window.L_NO_TOUCH && (pointer || 'ontouchstart' in window ||
 		(window.DocumentTouch && document instanceof window.DocumentTouch));
 
 // @property mobileOpera: Boolean; `true` for the Opera browser in a mobile device.
@@ -112,7 +115,7 @@ export var mobileGecko = mobile && gecko;
 
 // @property retina: Boolean
 // `true` for browsers on a high-resolution "retina" screen or on any screen when browser's display zoom is more than 100%.
-export var retina = (window.devicePixelRatio || (window.screen.deviceXDPI / window.screen.logicalXDPI)) > 1;
+export var retina = browser && (window.devicePixelRatio || (window.screen.deviceXDPI / window.screen.logicalXDPI)) > 1;
 
 // @property passiveEvents: Boolean
 // `true` for browsers that support passive events.
@@ -135,12 +138,12 @@ export var passiveEvents = (function () {
 // @property canvas: Boolean
 // `true` when the browser supports [`<canvas>`](https://developer.mozilla.org/docs/Web/API/Canvas_API).
 export var canvas = (function () {
-	return !!document.createElement('canvas').getContext;
+	return browser && !!document.createElement('canvas').getContext;
 }());
 
 // @property svg: Boolean
 // `true` when the browser supports [SVG](https://developer.mozilla.org/docs/Web/SVG).
-export var svg = !!(document.createElementNS && svgCreate('svg').createSVGRect);
+export var svg = browser && !!(document.createElementNS && svgCreate('svg').createSVGRect);
 
 // @property vml: Boolean
 // `true` if the browser supports [VML](https://en.wikipedia.org/wiki/Vector_Markup_Language).
@@ -161,5 +164,5 @@ export var vml = !svg && (function () {
 
 
 function userAgentContains(str) {
-	return navigator.userAgent.toLowerCase().indexOf(str) >= 0;
+	return browser && navigator.userAgent.toLowerCase().indexOf(str) >= 0;
 }

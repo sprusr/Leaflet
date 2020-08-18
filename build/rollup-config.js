@@ -24,14 +24,16 @@ const banner = `/* @preserve
  */
 `;
 
-const outro = `var oldL = window.L;
-exports.noConflict = function() {
-	window.L = oldL;
-	return this;
-}
+const outro = `if (typeof window !== 'undefined') {
+	var oldL = window.L;
+	exports.noConflict = function() {
+		window.L = oldL;
+		return this;
+	}
 
-// Always export us to window global (see #2364)
-window.L = exports;`;
+	// Always export us to window global (see #2364)
+	window.L = exports;
+}`;
 
 export default {
 	input: 'src/Leaflet.js',
